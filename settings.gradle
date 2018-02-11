@@ -1,0 +1,3 @@
+rootProject.name = 'slack-cleaner'
+rootProject.buildFileName = 'build.gradle.kts'
+
