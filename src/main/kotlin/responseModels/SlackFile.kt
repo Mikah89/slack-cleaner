@@ -1,3 +1,5 @@
+package responseModels
+
 data class SlackFile(val name: String, val size: Long) {
     fun toKilobytes(): Long {
         return size / 1024

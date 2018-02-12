@@ -1,6 +1,6 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-group = "mikah.com"
+group = "com.mikah"
 version = "1.0-SNAPSHOT"
 
 buildscript {
@@ -14,7 +14,6 @@ buildscript {
     dependencies {
         classpath(kotlinModule("gradle-plugin", kotlin_version))
     }
-    
 }
 
 apply {
@@ -34,7 +33,6 @@ dependencies {
     compile("com.beust", "klaxon", "2.1.4")
     compile(kotlinModule("stdlib-jdk8", kotlin_version))
     testCompile("junit", "junit", "4.12")
-
 }
 
 configure<JavaPluginConvention> {
@@ -43,4 +41,3 @@ configure<JavaPluginConvention> {
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
-
