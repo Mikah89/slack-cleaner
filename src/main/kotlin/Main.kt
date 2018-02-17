@@ -1,7 +1,7 @@
 import com.beust.klaxon.Klaxon
 import khttp.get
+import models.SlackFile
 import responseModels.ListFilesResponse
-import responseModels.PaginatedResponse
 
 val API_TOKEN = ""
 val FILE_LIST_API = "https://slack.com/api/files.list"
@@ -10,26 +10,44 @@ fun main(args: Array<String>) {
     // read parameters from console
 
     // process and invoke the requested operation
-    val slackFiles = listSlackFiles()
+    if(args.isNotEmpty()) {
+        when (args[0]) {
+            "usedspace" -> {
+                val slackFiles = listSlackFiles()
+                println("You are using " + calculateTotalSizeInMb(slackFiles) + "MBytes.")
+            }
 
+            "deleteold" -> {
+                // TODO to be done
+            }
+        }
+    }
+
+
+}
+
+fun calculateTotalSizeInMb(files: List<SlackFile>): Long {
+    return files.sumByDouble { f -> f.toMegabytes().toDouble() }.toLong()
 }
 
 /**
  * @param page
  */
-fun listSlackFiles(page: Int = 1, count: Int = 100): ListFilesResponse? {
+fun listSlackFiles(page: Int = 1, count: Int = 100): List<SlackFile> {
 
     // Fetch pagination information
-    val paginationInfo = makePaginatedRequest(FILE_LIST_API)
-    val pages = paginationInfo?.pages ?: 0
+    val paginationInfo = makePaginatedRequest<ListFilesResponse>(FILE_LIST_API, page, count)
+    val pages = paginationInfo?.paging?.pages ?: 0
 
-    // Fetch all items and concatenate to single list
-    // return
-    return null
+    val result = mutableListOf<SlackFile>()
+    IntRange(1, pages).map { idx ->
+        makePaginatedRequest<ListFilesResponse>(FILE_LIST_API, idx)?.files?.map { f -> result.add(f) }
+    }
+
+    return result
 }
 
-fun makePaginatedRequest(endPoint: String, page: Int = 1, count: Int = 100): PaginatedResponse? {
-    // TODO isolate remote call in another function.
+inline fun <reified T> makePaginatedRequest(endPoint: String, page: Int = 1, count: Int = 100): T? {
     val serverResponse = get(
             endPoint,
             params = mapOf(
@@ -38,5 +56,6 @@ fun makePaginatedRequest(endPoint: String, page: Int = 1, count: Int = 100): Pag
                     "page" to page.toString(),
                     "count" to count.toString())
     ).text
-    return Klaxon().parse<PaginatedResponse>(serverResponse)
+
+    return Klaxon().parse<T>(serverResponse)
 }

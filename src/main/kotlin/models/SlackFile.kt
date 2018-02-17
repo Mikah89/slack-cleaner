@@ -1,4 +1,4 @@
-package responseModels
+package models
 
 data class SlackFile(val name: String, val size: Long) {
     fun toKilobytes(): Long {

@@ -1,10 +1,5 @@
 package responseModels
 
-class ListFilesResponse(
-        ok: Boolean,
-        count: Int,
-        total: Int,
-        page: Int,
-        pages: Int,
-        val files: List<SlackFile>)
-    : PaginatedResponse(ok, count, total, page, pages)
+import models.SlackFile
+
+class ListFilesResponse(val ok: Boolean, val files: List<SlackFile>, val paging: PaginatedResponse)
